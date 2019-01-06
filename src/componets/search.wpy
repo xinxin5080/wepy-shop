@@ -1,0 +1,39 @@
+<style lang="less">
+.search-wrapper{
+    background-color: #ea4451;
+    padding: 20rpx 16rpx 20rpx 16rpx;
+    .input{
+        height: 60rpx;
+        background-color: #fff;
+        border-radius: 2px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+       text{
+           color: #999;
+           padding-left: 16rpx;
+       } 
+    }
+}
+</style>
+<template>
+   <view class="search-wrapper">
+     <view class="input">
+         <icon type="search" size="16" ></icon>
+         <text>搜索</text>
+     </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Search extends wepy.component {
+    config = {
+      navigationBarTitleText: '优购'
+    }
+    onLoad() {
+      console.log('onLoad')
+    }
+  }
+</script>

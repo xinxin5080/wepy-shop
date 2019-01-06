@@ -1,0 +1,233 @@
+<style lang="less">
+page {
+  background-color: #f4f4f4;
+}
+.slide-image {
+  height: 340rpx;
+  width: 100%;
+  outline: none;
+}
+.icon {
+  display: flex;
+  background-color: #fff;
+  .icon_img {
+    margin: 24rpx 0 29rpx 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    image {
+      width: 128rpx;
+      height: 128rpx;
+      margin-bottom: 10rpx;
+      align-self: center;
+    }
+   
+  }
+}
+.wares-column {
+  .column-title {
+    image {
+      display: block;
+      width: 750rpx;
+      height: 60rpx;
+    }
+  }
+  .column-content {
+    padding: 20rpx;
+    display: flex;
+    justify-content: space-between;
+
+    .column-left {
+      flex-shrink: 0;
+      image {
+        display: block;
+        width: 230rpx;
+        height: 388rpx;
+      }
+    }
+
+    .column-right {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+      margin-left: 15rpx;
+      justify-content: space-between;
+
+      image {
+        display: block;
+        width: 200rpx;
+        height: 187rpx;
+      }
+
+      .ware-item:nth-child(3n-2) image {
+        width: 260rpx;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <!-- 头部 -->
+    <search></search>
+    <!-- 轮播图 -->
+    <swiper indicator-dots autoplay>
+      <swiper-item wx:for="{{dataList}}" wx:key="{{index}}">
+        <navigator url="{{item.navigator_url}}">
+          <image src="{{item.image_src}}" class="slide-image" mode="aspectFill" />
+        </navigator>
+      </swiper-item>
+    </swiper>
+    <!-- 图标 -->
+    <view class='icon'>
+      <navigator class='icon_img' url="item.navigator_url" wx:for="{{categorys}}" wx:key="{{index}}">
+        <image src='{{item.image_src}}'>
+         
+      </navigator>
+    </view>
+    <!-- 时尚女装 -->
+    <!-- 商品分栏 -->
+    <view class="wares-column" wx:for="{{floor}}" wx:key="{{index}}">
+      <view class="column-title">
+        <image src="{{item.tieleImage}}" mode="aspectFill" />
+      </view>
+      <view class="column-content">
+        <view class="column-left">
+          <navigator url="{{item.largeImage.url}}">
+            <image src="{{item.largeImage.src}}" />
+          </navigator>
+        </view>
+        <view class="column-right">
+          <view class="ware-item" 
+          wx:for="{{item.smallImage}}" 
+          wx:for-item='subItem'
+          wx:for-index='subIndex'
+          wx:key='{{subIndex}}'>
+            <navigator url="{{subItem.url}}">
+              <image src="{{subItem.src}}" />
+            </navigator>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+  <!-- 户外远动 -->
+
+</template>
+
+<script>
+import wepy from 'wepy';
+//   引进组件
+import Search from '../componets/search';
+
+export default class Index extends wepy.page {
+  data = {
+    dataList: [],
+    categorys: [],
+    floor:[
+      // {
+      //   tieleImage:'https://img.alicdn.com/tfs/TB1x3nNX6uhSKJjSspmXXcQDpXa-258-52.png',
+      //   largeImage:{
+      //     src:'https://img.alicdn.com/bao/uploaded/i1/268927841/TB2qW3doh6I8KJjSszfXXaZVXXa_!!268927841.jpg_400x400q90.jpg_.webp',
+      //     url:''
+      //   },
+      //   smallImage:[
+      //     {src:"https://img.alicdn.com/bao/uploaded/i1/268927841/TB2qW3doh6I8KJjSszfXXaZVXXa_!!268927841.jpg_400x400q90.jpg_.webp"},
+      //     {src:"https://img.alicdn.com/bao/uploaded/i1/268927841/TB2qW3doh6I8KJjSszfXXaZVXXa_!!268927841.jpg_400x400q90.jpg_.webp"},
+      //     {src:"https://img.alicdn.com/bao/uploaded/i1/268927841/TB2qW3doh6I8KJjSszfXXaZVXXa_!!268927841.jpg_400x400q90.jpg_.webp"},
+      //     {src:"https://img.alicdn.com/bao/uploaded/i1/268927841/TB2qW3doh6I8KJjSszfXXaZVXXa_!!268927841.jpg_400x400q90.jpg_.webp"}
+      //   ]
+      // }
+    ]
+  };
+  config = {
+    navigationBarTitleText: '优购'
+  };
+  onLoad() {
+    // 请求接口
+    wx.request({
+      // 轮播图接口
+      url: 'https://www.itjustfun.cn/api/public/v1/home/swiperdata',
+      success: res => {
+        // console.log(res.data)
+        // 解构
+        const { data, meta } = res.data;
+        // 判断
+        if (meta.status === 200) {
+          // 赋值
+          this.dataList = data;
+          // 异步请求,需要这个
+          this.$apply();
+        } else {
+          console.log('error');
+        }
+      }
+    });
+      // 首页分类(图标)
+    wx.request({
+      url: 'https://www.itjustfun.cn/api/public/v1/home/catitems',
+      success: res => {
+        // console.log(res.data);
+        // 解构
+        const { data, meta } = res.data;
+        // 判断
+        if (meta.status === 200) {
+          this.categorys = data;
+          this.$apply();
+        }
+      }
+    })
+    // 楼层
+    wx.request({
+      url:'https://www.itjustfun.cn/api/public/v1/home/floordata',
+      success:(res)=>{
+        console.log(res.data)
+        // 解构
+        const {data,meta} = res.data
+        // 判断
+        if(meta.status===200){
+          // 将后台的数据转成我们自定义的格式
+          const newData = data.map((v,i)=>{
+            console.log(v)
+            // v:每一项数据,i:每一项index
+            // 转成自定义floor格式
+            let item = {
+              // 头部图片信息
+              tieleImage: v.floor_title.image_src,
+              // 左侧大图
+              largeImage:{
+                src: v.product_list[0].image_src,
+                url: v.product_list[0].navigator_url
+              },
+              // 右侧的小图
+              smallImage:[]
+            };
+            // 第一项数据已经用来当成大图渲染，删除第一项
+            v.product_list.shift();
+            const smallArray = v.product_list;
+            // 通过循环剩下的4项给小图
+            item.smallImage = smallArray.map(val => {
+            // 返回的四个小图的数据
+              return {
+                src:val.image_src,
+                url:val.navigator_url
+              }
+            });
+            // 将整个大的map返回的数据
+            return item;
+          })
+          // 赋值
+          this.floor = newData;
+          this.$apply();
+        }else{
+          console.log("error")
+        }
+      }
+    })
+  }
+  components = {
+    search: Search
+  };
+}
+</script>

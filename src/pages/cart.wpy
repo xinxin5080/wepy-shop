@@ -1,0 +1,203 @@
+<style lang="less">
+.container {
+  .site {
+    padding: 0 20rpx;
+    border-bottom: 4px solid #eee;
+    background-color: #fff;
+    .site-top {
+      display: flex;
+      justify-content: space-between;
+      height: 100rpx;
+      line-height: 100rpx;
+      .phone {
+        display: flex;
+      }
+    }
+  }
+  .name {
+    height: 100rpx;
+    line-height: 100rpx;
+  }
+}
+.yougou{
+  display: flex;
+  height: 100rpx;
+  line-height: 100rpx;
+   padding: 0 20rpx;
+   border-bottom: 1px solid #eee;
+   .icon-xiangbao{
+     margin-right: 15rpx;
+   }
+}
+.list{
+  display: flex;
+  padding: 20rpx 20rpx;
+  .list-button{
+    margin: 0 30rpx 0 10rpx;
+    align-self: center;
+  }
+  .list-right{
+    display: flex;
+    .list-img{
+      margin-right:20rpx;
+      image{
+        width: 170rpx;
+        height: 190rpx;
+      }
+    }
+    .list-title{
+     .goods-title{
+        overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+     }
+     .goods-price{
+       display: flex;
+       justify-content: space-between;
+       margin-top: 80rpx;
+       .goods-price-title{
+         color: #ea4451;
+       }
+       .list-alter{
+         display: flex;
+         .box{
+           border: 3px solid #999;
+           span{
+             padding: 15rpx;
+           }
+         }
+         .number{
+           margin: 5rpx 25rpx 0 25rpx;
+         }
+       }
+     }
+    }
+  }
+}
+.settlement{
+  height: 100rpx;
+  display: flex;
+  position: fixed;
+  width: 100%;
+  bottom: 0rpx;
+  right: 0;
+  .check-button{
+    line-height: 115rpx;
+    margin-right: 150rpx;
+    margin-left: 30rpx;
+    .check-button-title{
+      margin-left: 20rpx;
+    }
+  }
+  .total{
+    margin-right: 10rpx;
+    .total-top{
+      display: flex;
+      margin-top: 10rpx;
+      span{
+        color: #ea4451;
+      }
+    }
+     .yunfei{
+        font-size: 12px;
+        color: #999;
+      }
+  }
+  .settlement-button{
+    background-color: #ea4451;
+    line-height: 100rpx;
+    color: #fff;
+    width: 233rpx;
+    text-align: center;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <!-- 收货地址 -->
+    <view class='site'>
+      <view class='site-top'>
+        <text class="name">收货人:苏</text>
+        <view class="phone">
+          <text>12222222</text>
+          <view class='iconfont icon-you'></view>
+        </view>
+      </view>
+      <text>收货地址:广东省广州市天河区</text>
+    </view>
+    <!-- 优购生活馆 -->
+    <view class="yougou">
+      <view class="iconfont icon-xiangbao"></view>
+      <text>优购生活馆</text>
+    </view>
+    <!-- 列表 -->
+    <view class="list">
+      <!-- 左侧按钮 -->
+      <view class="list-button">
+        <icon type='success' color="red" class="red-button"></icon>
+      </view>
+      <!-- 右侧 -->
+      <view class="list-right">
+        <!-- 右侧图片 -->
+        <navigator class="list-img">
+          <image src="https://img.alicdn.com/imgextra/i2/TB1kAcbcb1YBuNjSszhYXIUsFXa_M2.SS2_220x220.jpg_.webp"/>
+        </navigator>
+        <!-- 右侧文字 -->
+        <view class='list-title'>
+          <text class="goods-title">连帽针织连衣裙女秋装新品中长款宽松毛衣裙直筒裙休闲过膝长裙B6连帽针织连衣裙女秋装新品中长款宽松毛衣裙直筒裙休闲过膝长裙B6</text>
+          <view class="goods-price">
+            <text class="goods-price-title">¥444</text>
+            <!-- 修改商品数量 -->
+            <view class="list-alter">
+              <view class="subtract box">
+                <span>-</span>
+              </view>
+              <text class="number">3</text>
+              <view class="add box">
+                <span>+</span>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 结算 -->
+    <view class="settlement">
+      <!-- 全选按钮 -->
+      <view class="check-button">
+        <icon type="success" color="red"></icon>
+        <text class="check-button-title">全选</text>
+      </view>
+      <!-- 合计 -->
+      <view class="total">
+        <view class="total-top">
+          <text>合计:</text>
+          <span>¥14110.00</span>
+        </view>
+        <text class="yunfei">包含运费</text>
+      </view>
+      <!-- 结算按钮 -->
+      <view class="settlement-button">
+        结算(3)
+      </view>
+
+    </view>
+  </view>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '购物车'
+  };
+  onLoad() {
+    // 请求接口
+  }
+}
+</script>

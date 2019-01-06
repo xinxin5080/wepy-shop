@@ -1,0 +1,241 @@
+<style lang="less">
+// 引进模板样式
+@import '../plugins/wxParse/wxParse.wxss';
+page {
+  background-color: #eee;
+}
+.slide-image {
+  width: 750rpx;
+  height: 750rpx;
+  image {
+    width: 750rpx;
+    height: 750rpx;
+  }
+}
+.goods {
+  padding: 0 15rpx;
+  background-color: #fff;
+  .pics {
+    font-size: 20px;
+    color: #ea4451;
+  }
+  .goods-title {
+    display: flex;
+    .goods-left {
+      font-size: 16px;
+      margin-right: 30rpx;
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      display: -webkit-box;
+
+      -webkit-box-orient: vertical;
+
+      -webkit-line-clamp: 2;
+    }
+    .goods-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #ccc;
+      width: 120rpx;
+      flex-shrink: 0;
+    }
+  }
+  .goods-express {
+    height: 100rpx;
+    line-height: 100rpx;
+    font-size: 12px;
+    color: #ccc;
+  }
+}
+.goods-promotion {
+  padding: 0 15rpx;
+  margin-top: 20rpx;
+  background-color: #fff;
+  height: 80rpx;
+  line-height: 80rpx;
+  text {
+    padding-left: 20rpx;
+    color: #ea4451;
+  }
+}
+.foot {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  .foot-left {
+    height: 100rpx;
+    display: flex;
+    .left {
+      width: 170rpx;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+    }
+  }
+  .foot-right {
+    display: flex;
+    flex: 1;
+    .right {
+      width: 205rpx;
+      color: #fff;
+      text-align: center;
+      line-height: 100rpx;
+    }
+    .shoppingtab {
+      background-color: #f4b73f;
+    }
+    .buytab {
+      background-color: #ea4451;
+    }
+  }
+}
+.goods-details {
+  display: flex;
+  .text {
+    flex: 1;
+    font-size: 18px;
+    height: 100rpx;
+    line-height: 100rpx;
+    text-align: center;
+  }
+}
+.actuve {
+  color: #ea4451;
+}
+.wxParse{
+  image{
+    width: 100%;
+  }
+}
+</style>
+<template>
+  <view class="container">
+    <!-- 引进模板 -->
+    <import src="../plugins/wxParse/wxParse.wxml" />
+    <!-- 轮播图 -->
+    <swiper indicator-dots autoplay class="slide-image">
+      <block wx:for="{{goodsData.pics}}" wx:key="{{index}}">
+        <swiper-item>
+          <image src="{{item.pics_mid}}" mode="aspectFill" />
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class='goods'>
+      <!-- 文字标题 -->
+      <view class='pics'>¥{{goodsData.goods_price}}</view>
+      <view class="goods-title">
+        <view class='goods-left'>{{goodsData.goods_name}}</view>
+        <view class='goods-right'>
+          <view class='iconfont icon-shoucang'></view>
+          <text>收藏</text>
+        </view>
+      </view>
+      <vive class='goods-express'>
+        快递: 免运费
+      </vive>
+    </view>
+    <!-- 促销 -->
+    <view class='goods-promotion'>
+      促销:
+      <text>满300减30</text>
+    </view>
+    <!-- 商品详情/规格参数 -->
+    <view class='goods-details'>
+      <view wx:for="{{textList}}" wx:key="{{index}}" class="text {{currenTab===index ?'actuve' : ''}}" @tap="handletab({{index}})">
+        <text>{{item.text}}</text>
+      </view>
+    </view>
+    <!-- index=0显示 -->
+    <view wx:if="{{currenTab==0}}" class='wxParse'>
+      <!-- 模板 -->
+       <template is="wxParse" data="{{wxParseData:article.nodes}}"/>
+    </view>
+    <!-- index=1显示 -->
+    <view wx:if="{{currenTab==1}}">
+      格式
+    </view>
+    <!-- 底部栏 -->
+    <view class='foot'>
+      <view class='foot-left'>
+        <view class='left-kefu left'>
+          <view class='iconfont icon-htmal5icon31'></view>
+          <text>联系客服</text>
+        </view>
+        <view class='left-shopping left'>
+          <view class='iconfont icon-gouwuche'></view>
+          <text>购物车</text>
+        </view>
+
+      </view>
+      <view class='foot-right'>
+        <view class='shoppingtab right'>加入购物车</view>
+        <view class='buytab right'>立即购买</view>
+
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+var WxParse = require('../plugins/wxParse/wxParse.js');
+
+export default class Search extends wepy.page {
+  config = {
+    navigationBarTitleText: '商品详情'
+  };
+  data = {
+    currenTab: 0,
+    goodsData: [],
+    textList: [{ text: '商品详情' }, { text: '规格参数' }]
+  };
+  onLoad(options) {
+    // 接收传递过来的参数
+    const { id } = options;
+    console.log(id);
+           // 设置加载的弹窗提示
+      wx.showLoading({
+        title:'请求数据中'
+      });
+    // 请求接口
+    wx.request({
+      url: 'https://www.itjustfun.cn/api/public/v1/goods/detail',
+      data: { goods_id: id },
+      success: res => {
+        console.log(res.data);
+        // 解构
+        const { data, meta } = res.data;
+        //判断
+        if (meta.status === 200) {
+          // 赋值
+          this.goodsData = data;
+          // 异步,更新
+          this.$apply();
+
+          // 绑定数据
+          var article = data.goods_introduce;
+          // 调用模板的方法
+          WxParse.wxParse('article', 'html', article, this, 5);
+        }else{
+          console.log('error')
+        }
+            //隐藏加载弹窗提示框
+        wx.hideLoading();
+      }
+    });
+  }
+  methods = {
+    handletab: function(index) {
+      this.currenTab = index;
+    }
+  };
+}
+</script>

@@ -1,0 +1,166 @@
+<style lang="less">
+@import '../plugins/wxParse/wxParse.wxss';
+.search {
+  background-color: #eeeeee;
+  padding: 30rpx 15rpx 30rpx 15rpx;
+  .search-box {
+    background-color: #fff;
+    height: 60rpx;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    padding-left: 20rpx;
+    text {
+      margin-left: 15rpx;
+    }
+  }
+}
+.list-title {
+  font-size: 16px;
+  display: flex;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  .text {
+    flex: 1;
+    text-align: center;
+  }
+  .active {
+    color: #ea4451;
+  }
+}
+.list{
+  padding: 0 20rpx;
+  .list-c {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding: 20rpx 0;
+  image {
+    width: 200rpx;
+    height: 200rpx;
+    flex-shrink: 0;
+    margin-right: 20rpx;
+  }
+  .list-right {
+    position: relative;
+    .list-text {
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      display: -webkit-box;
+
+      -webkit-box-orient: vertical;
+
+      -webkit-line-clamp: 2;
+    }
+    .list-price {
+      position: absolute;
+      bottom: 0;
+      left:0;
+      color: #ea4451;
+      text{
+        font-size: 24px;
+      }
+    }
+  }
+}
+}
+
+</style>
+<template>
+  <view class="container">
+    <!-- 搜索 -->
+    <view class='search'>
+      <view class='search-box'>
+        <icon type="search" size="18" />
+        <text>{{options.keyWord}}</text>
+      </view>
+    </view>
+    <!-- 列表头部 -->
+    <view class='list-title'>
+      <view class="text {{currentTab ===index? 'active':''}}" wx:for='{{listData}}' wx:key='{{index}}' @tap="handleTap({{index}})">
+        <text>{{item.text}}</text>
+      </view>
+    </view>
+    <!-- 列表 -->
+    <view class='list'>
+       <view class='list-c' 
+       wx:for='{{goodsList}}' 
+       wx:key='{{index}}'
+       @tap="headtabsub({{item.goods_id}})"
+       >
+      <image src='{{item.goods_small_logo}}' />
+      <view class='list-right'>
+        <view class='list-text'>
+          {{item.goods_name}}
+        </view>
+        <view class='list-price'>
+          ¥<text>{{item.goods_price}}</text>
+        </view>
+        
+      </view>
+    </view>
+    </view>
+   
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Search extends wepy.page {
+  config = {
+    navigationBarTitleText: '搜索'
+  };
+  data = {
+    currentTab: 0,
+    listData: [{ text: '综合' }, { text: '销量' }, { text: '价格', iocn: '' }],
+    goodsList:[],
+    options:{}
+  };
+  onLoad(options) {
+    // 接收传递过来的参数
+    console.log(options)
+    const { keyWord } = options
+    // 将options储存在data中
+    this.options = options
+    console.log(keyWord)
+     // 设置加载的弹窗提示
+      wx.showLoading({
+        title:'请求数据中'
+      });
+    // 请求接口
+    wx.request({
+      url:'https://www.itjustfun.cn/api/public/v1/goods/search',
+      data:{ query:keyWord },
+      success: res =>{
+        console.log(res)
+        // 解构
+        const { data,meta } = res.data
+        // 判断
+        if(meta.status===200){
+          this.goodsList = data.goods
+          this.$apply()
+        }else{
+          console.log(error)
+        }
+        //隐藏加载弹窗提示框
+        wx.hideLoading();
+      }
+      
+    })
+  }
+  methods = {
+    handleTap: function(index) {
+      this.currentTab = index
+    },
+    headtabsub:function (id) {
+      console.log(id);
+      // 跳转
+      wx.navigateTo({
+          url: `/pages/ware-detail?id=${id}`
+      })
+    }
+  };
+}
+</script>

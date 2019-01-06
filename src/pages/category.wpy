@@ -1,0 +1,187 @@
+<style lang="less">
+.content {
+  position: relative;
+  display: flex;
+  width: 750rpx;
+  position: fixed;
+  top: 100rpx;
+  bottom: 0;
+  .left {
+    height: 100%;
+    background-color: #f4f4f4;
+    width: 200rpx;
+    flex-shrink: 0;
+    .category-item {
+      border-bottom: 1px #eee solid;
+      height: 100rpx;
+      line-height: 100rpx;
+      text-align: center;
+    }
+    .active {
+      color: #ea4451;
+      background-color: #fff;
+      position: relative;
+      &:after {
+        display: block;
+        content: '';
+        width: 4px;
+        height: 60rpx;
+        background: #ea4451;
+        position: absolute;
+        top: 20rpx;
+        left: 0;
+      }
+    }
+  }
+  .right {
+    flex: 1;
+    padding: 0 20rpx;
+    .category-title {
+      text-align: center;
+      padding: 40rpx 0;
+      span {
+        color: #eee;
+      }
+      text {
+        margin: 0 30rpx;
+      }
+    }
+    .category-c {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      .category-img {
+        width: 33%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20rpx;
+        image {
+          width: 110rpx;
+          height: 80rpx;
+        }
+        text{
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+.scroll-left {
+  height: 100%;
+}
+.scroll-right{
+    height: 100%;
+}
+</style>
+<template>
+    <view class="container">
+        <!-- 头部 -->
+        <search></search>
+        <!-- 内容 -->
+        <view class='content'>
+            <!-- 左侧 -->
+            <view class='left'>
+                <!-- 要滑动, 用scroll-view,本身要有高度-->
+                <scroll-view scroll-y class="scroll-left">
+                    <view class="category-item {{currentTab == index ? 'active': ''}}" wx:for="{{category}}" wx:key="{{index}}" 
+                    @tap="handTap({{index}})">
+                        {{item.cat_name}}
+                    </view>
+                </scroll-view>
+            </view>
+            <!-- 右侧 -->
+                 <scroll-view scroll-y class="scroll-right">
+            <view class='right'>
+                <view wx:for="{{rightData}}" wx:key="{{index}}">
+                    <view class='category-title'>
+                        <span>/</span>
+                        <text>{{item.cat_name}}</text>
+                        <span>/</span>
+                    </view>
+                    <!--  -->
+                    <!-- @tap = "handlesearch({{subitem.cat_name}})"  传递参数 -->
+                    <view class='category-c'>
+                        <view @tap = "handlesearch({{subitem.cat_name}})"class='category-img' 
+                        wx:for='{{item.children}}' 
+                        wx:key='{{key}}' 
+                        wx:for-item='subitem' 
+                        wx:for-key='key'>
+                            <image src="{{'https://www.itjustfun.cn/'+ subitem.cat_icon}}" />
+                            <text>{{subitem.cat_name}}</text>
+                        </view>
+                    </view>
+                </view>
+            </view>
+                </scroll-view>
+        </view>
+    </view>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+//   引进组件
+import Search from '../componets/search';
+
+export default class Index extends wepy.page {
+  data = {
+    //右侧数据
+    rightData: {},
+    // index
+    currentTab: 0,
+    category: []
+  };
+  config = {
+    navigationBarTitleText: '分类'
+  };
+  onLoad() {
+       // 设置加载的弹窗提示
+      wx.showLoading({
+        title:'请求数据中'
+      });
+    // 请求接口
+    wx.request({
+      url: 'https://www.itjustfun.cn/api/public/v1/categories',
+      success: res => {
+        console.log(res.data);
+        // 解构
+        const { data, meta } = res.data;
+        // 判断
+        if (meta.status === 200) {
+          this.category = data;
+          // 右侧赋值
+          this.rightData = data[0].children;
+          // 更新
+          this.$apply();
+          //   console.log(data[0].children.children)
+        } else {
+          console.log('error');
+        }
+          //隐藏加载弹窗提示框
+        wx.hideLoading();
+      }
+    });
+  }
+  components = {
+    search: Search
+  };
+  methods = {
+    //   点击事件,将index传递过去
+    handTap: function(index) {
+      //   将index赋值给currentTab
+      this.currentTab = index;
+      //   点击切换右边的数据
+      this.rightData = this.category[index].children;
+    },
+    // 跳转页面,将参数传递过去
+    handlesearch:function (keyWord) {
+        // console.log(keyWord)
+        // 跳转
+        wx.navigateTo({
+            url:`/pages/search-list?keyWord=${keyWord}`
+        })
+    }
+  };
+}
+</script>
